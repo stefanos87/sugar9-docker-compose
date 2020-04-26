@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  web:
+    build: ./dockersugar9web-master
+    ports:
+      - 8080:8080
+    volumes: 
+      - ./App/html:/var/www/html
+  cron:
+    build: ./dockersugar9cron-master
+    volumes: 
+      - ./App/html:/var/www/html
+  elastic:
+    image: elasticsearch:5.6.7
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ./App/elastic:/usr/share/elasticsearch/data
+  db:
+    build: ./dockersugar9db-master
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    volumes: 
+      - ./App/db:/var/lib/mysql
