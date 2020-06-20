@@ -1,0 +1,311 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    generation: 1
+    labels:
+      com.docker.service.id: sugar9-cron
+      com.docker.service.name: cron
+      com.docker.stack.namespace: sugar9
+    name: cron
+    namespace: default
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 3
+    selector:
+      matchLabels:
+        com.docker.service.id: sugar9-cron
+        com.docker.service.name: cron
+        com.docker.stack.namespace: sugar9
+    serviceName: ""
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          com.docker.service.id: sugar9-cron
+          com.docker.service.name: cron
+          com.docker.stack.namespace: sugar9
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: beta.kubernetes.io/os
+                  operator: In
+                  values:
+                  - linux
+                - key: beta.kubernetes.io/arch
+                  operator: In
+                  values:
+                  - amd64
+        containers:
+        - image: stefanos87/compose-sugar9-cron
+          imagePullPolicy: IfNotPresent
+          name: cron
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: web-volume
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - metadata:
+        creationTimestamp: null
+        name: web-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    generation: 1
+    labels:
+      com.docker.service.id: sugar9-db
+      com.docker.service.name: db
+      com.docker.stack.namespace: sugar9
+    name: db
+    namespace: default
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 3
+    selector:
+      matchLabels:
+        com.docker.service.id: sugar9-db
+        com.docker.service.name: db
+        com.docker.stack.namespace: sugar9
+    serviceName: ""
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          com.docker.service.id: sugar9-db
+          com.docker.service.name: db
+          com.docker.stack.namespace: sugar9
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: beta.kubernetes.io/os
+                  operator: In
+                  values:
+                  - linux
+                - key: beta.kubernetes.io/arch
+                  operator: In
+                  values:
+                  - amd64
+        containers:
+        - image: stefanos87/compose-sugar9-db
+          imagePullPolicy: IfNotPresent
+          name: db
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          - containerPort: 33060
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: db-volume
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - metadata:
+        creationTimestamp: null
+        name: db-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    generation: 1
+    labels:
+      com.docker.service.id: sugar9-elastic
+      com.docker.service.name: elastic
+      com.docker.stack.namespace: sugar9
+    name: elastic
+    namespace: default
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 3
+    selector:
+      matchLabels:
+        com.docker.service.id: sugar9-elastic
+        com.docker.service.name: elastic
+        com.docker.stack.namespace: sugar9
+    serviceName: ""
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          com.docker.service.id: sugar9-elastic
+          com.docker.service.name: elastic
+          com.docker.stack.namespace: sugar9
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: beta.kubernetes.io/os
+                  operator: In
+                  values:
+                  - linux
+                - key: beta.kubernetes.io/arch
+                  operator: In
+                  values:
+                  - amd64
+        containers:
+        - image: elasticsearch:5.6.7
+          imagePullPolicy: IfNotPresent
+          name: elastic
+          ports:
+          - containerPort: 9200
+            protocol: TCP
+          - containerPort: 9300
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /usr/share/elasticsearch/data
+            name: elastic-volume
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - metadata:
+        creationTimestamp: null
+        name: elastic-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    generation: 1
+    labels:
+      com.docker.service.id: sugar9-web
+      com.docker.service.name: web
+      com.docker.stack.namespace: sugar9
+    name: web
+    namespace: default
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 3
+    selector:
+      matchLabels:
+        com.docker.service.id: sugar9-web
+        com.docker.service.name: web
+        com.docker.stack.namespace: sugar9
+    serviceName: ""
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          com.docker.service.id: sugar9-web
+          com.docker.service.name: web
+          com.docker.stack.namespace: sugar9
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: beta.kubernetes.io/os
+                  operator: In
+                  values:
+                  - linux
+                - key: beta.kubernetes.io/arch
+                  operator: In
+                  values:
+                  - amd64
+        containers:
+        - image: stefanos87/compose-sugar9-web
+          imagePullPolicy: IfNotPresent
+          name: web
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: web-volume
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - metadata:
+        creationTimestamp: null
+        name: web-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

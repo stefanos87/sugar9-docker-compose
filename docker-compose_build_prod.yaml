@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   web:
-    image: stefanos87/compose-sugar9-web
+    build: ./dockersugar9web-master
     depends_on:
       - db
     ports:
@@ -9,7 +9,7 @@ services:
     volumes: 
       - web-volume:/var/www/html
   cron:
-    image: stefanos87/compose-sugar9-cron
+    build: ./dockersugar9cron-master
     volumes: 
       - web-volume:/var/www/html
   elastic:
@@ -20,7 +20,7 @@ services:
     volumes:
       - elastic-volume:/usr/share/elasticsearch/data
   db:
-    image: stefanos87/compose-sugar9-db
+    build: ./dockersugar9db-master
     ports:
       - "3306:3306"
       - "33060:33060"
@@ -29,4 +29,4 @@ services:
 volumes:
   web-volume: 
   elastic-volume:
-  db-volume: 
+  db-volume:
