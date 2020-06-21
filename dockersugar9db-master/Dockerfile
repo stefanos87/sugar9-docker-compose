@@ -1,6 +1,6 @@
-FROM mysql:5.7
+FROM mysql/mysql-server:5.7
 
-COPY config/mysql/docker.cnf /etc/mysql/conf.d/docker.cnf
+COPY config/mysql/my.cnf /etc/my.cnf
 
 ENV MYSQL_ROOT_PASSWORD=root
 
